@@ -63,6 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // 运行推理
         let output = run_inference(&session, input)?;
+        let output = softmax(&output);
 
         // 找到最大概率的类别索引
         let max_index = output
@@ -76,7 +77,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         let labels = load_labels("imagenet_classes.txt")?;
 
         // 输出分类结果
-        println!("Predicted class: {}", labels[max_index]);
+        println!(
+            "Predicted class: {} {}",
+            labels[max_index], output[max_index]
+        );
     }
     Ok(())
+}
+
+fn softmax(input: &[f32]) -> Vec<f32> {
+    // 找到输入向量中的最大值
+    let max_val = input.iter().cloned().fold(f32::NEG_INFINITY, f32::max);
+
+    // 计算指数值
+    let exp_values: Vec<f32> = input.iter().map(|x| (x - max_val).exp()).collect();
+
+    // 计算指数值的总和
+    let sum_exp = exp_values.iter().sum::<f32>();
+
+    // 计算 Softmax 值
+    exp_values.iter().map(|x| x / sum_exp).collect()
 }
