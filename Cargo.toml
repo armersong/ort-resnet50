@@ -1,7 +1,7 @@
 [package]
 name = "ort-resnet"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 ort = { version = "1.16.3"}
